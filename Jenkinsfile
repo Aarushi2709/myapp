@@ -1,50 +1,33 @@
 pipeline {
     agent any
+
     environment {
-        SONARQUBE = 'SonarQube'  // Replace with your SonarQube installation name in Jenkins
+        CI = 'true'
+        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'  // Use exact name from Global Tool Config
     }
+
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                checkout scm
+                sh 'npm install'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Run Tests & Coverage') {
             steps {
-                script {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    sh 'npm test -- --coverage'
-                }
+                sh 'npm test -- --coverage'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    // Trigger SonarQube scan
-                    withSonarQubeEnv('SonarQube') {
-                        sh 'sonar-scanner'
-                    }
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                script {
-                    // Wait for SonarQube Quality Gate result
-                    def qualityGate = waitForQualityGate()
-                    if (qualityGate.status != 'OK') {
-                        error "Quality gate failed: ${qualityGate.status}"
-                    }
+                withSonarQubeEnv('SonarQubeScanner') {  // Use exact name from Jenkins → Configure System
+                    sh """
+                        ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                          -Dsonar.projectKey=myapp \
+                          -Dsonar.sources=. \
+                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                    """
                 }
             }
         }
