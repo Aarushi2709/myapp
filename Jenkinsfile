@@ -1,17 +1,20 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:14-alpine'  // Docker image with Node.js
-            label 'docker'          // Optional: use this if you have a node label for Docker agents
-        }
-    }
-    
+    agent any  // Run on any available agent
     stages {
+        stage('Checkout') {
+            steps {
+                // Check out the code from the Git repository
+                git 'https://github.com/Aarushi2709/myapp.git'
+            }
+        }
         stage('Build') {
             steps {
                 script {
-                    // Running npm install inside the Docker container
-                    sh 'npm install'
+                    // Run Docker container using node:14-alpine image
+                    docker.image('node:14-alpine').inside {
+                        // Install the dependencies in the Docker container
+                        sh 'npm install'
+                    }
                 }
             }
         }
