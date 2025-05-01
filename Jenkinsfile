@@ -1,27 +1,43 @@
 pipeline {
     agent any
-    environment {
-        CI = 'true'
-        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'
+    tools {
+        sonarQubeScanner 'SonarQubeScanner' // Make sure the scanner is set correctly
     }
-
+    environment {
+        SONAR_HOST_URL = 'http://your-sonarqube-server:9000'
+        SONAR_AUTH_TOKEN = 'your-sonarqube-auth-token'
+    }
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Build') {
             steps {
-                sh 'npm install'
+                script {
+                    sh 'npm install'
+                }
             }
         }
-
-        stage('Run Tests & Coverage') {
-            steps {
-                sh 'npm test -- --coverage'
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('MySonarQube') {
-                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner"
+                script {
+                    // Run the SonarQube analysis
+                    sh '''
+                    sonar-scanner \
+                        -Dsonar.projectKey=your_project_key \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    sh 'npm test -- --coverage'
                 }
             }
         }
