@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         CI = 'true'
-        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'  // Use exact name from Global Tool Config
+        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'  // Tool name from Global Tool Configuration
     }
 
     stages {
@@ -21,13 +21,26 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQubeScanner') {  // Use exact name from Jenkins → Configure System
+                withSonarQubeEnv('SonarQubeScanner') {  // SonarQube server name from Jenkins settings
                     sh """
                         ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                           -Dsonar.projectKey=myapp \
                           -Dsonar.sources=. \
                           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
                     """
+                }
+            }
+        }
+
+        stage('Quality Gate Check') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to failing Quality Gate: ${qg.status}"
+                        }
+                    }
                 }
             }
         }
