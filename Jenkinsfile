@@ -1,47 +1,30 @@
 pipeline {
     agent any
+    
+    tools {
+        // Specify the SonarQube Scanner tool to use
+        sonarQubeScanner 'SonarQubeScanner'  // Ensure this matches the name configured in Global Tool Configuration
+    }
 
     environment {
-        SONAR_HOST_URL = 'http://your-sonarqube-server:9000' // Specify the SonarQube URL
-        SONAR_AUTH_TOKEN = 'sqa_16d8fbfcf7ee1b744332fd20478faf87894ce490' // Specify the authentication token
+        // Configure SonarQube environment variables (if needed)
+        SONARQUBE_SCANNER_HOME = tool name: 'SonarQubeScanner', type: 'ToolLocation'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                script {
-                    sh 'npm install'
-                }
+                git 'https://github.com/Aarushi2709/myapp.git'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('MySonarQube') { // 'MySonarQube' is the name of your SonarQube server configuration in Jenkins
-                    script {
-                        // Run the SonarQube analysis
-                        sh '''
-                        sonar-scanner \
-                            -Dsonar.projectKey=your_project_key \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.login=$SONAR_AUTH_TOKEN
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
                 script {
-                    sh 'npm test -- --coverage'
+                    // Run the SonarQube analysis
+                    withSonarQubeEnv('MySonarQube') {
+                        sh 'sonar-scanner'
+                    }
                 }
             }
         }
