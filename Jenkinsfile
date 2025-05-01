@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        sonarQubeScanner 'SonarQubeScanner' // Make sure the scanner is set correctly
+        SonarQubeScanner 'SonarQubeScanner' // Make sure the scanner is set correctly
     }
     environment {
         SONAR_HOST_URL = 'http://your-sonarqube-server:9000'
