@@ -1,31 +1,18 @@
 pipeline {
-    agent any
-    
-    tools {
-        // Specify the SonarQube Scanner tool to use
-        sonarQubeScanner 'SonarQubeScanner'  // Ensure this matches the name configured in Global Tool Configuration
-    }
-
+    agent any  // Use the default Jenkins agent
     environment {
-        // Configure SonarQube environment variables (if needed)
-        SONARQUBE_SCANNER_HOME = tool name: 'SonarQubeScanner', type: 'ToolLocation'
+        CI = 'true'
     }
-
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                git 'https://github.com/Aarushi2709/myapp.git'
+                sh 'npm install'
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Run Tests & Coverage') {
             steps {
-                script {
-                    // Run the SonarQube analysis
-                    withSonarQubeEnv('MySonarQube') {
-                        sh 'sonar-scanner'
-                    }
-                }
+                sh 'npm test -- --coverage'
             }
         }
     }
