@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'node:6-alpine'
-            // No need for '-p' argument in the pipeline
         }
     }
 
