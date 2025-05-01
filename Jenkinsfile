@@ -1,14 +1,11 @@
 pipeline {
     agent {
         docker {
-            image 'node:6-alpine'
+            image 'node:14-alpine'  // Docker image with Node.js
+            label 'docker'          // Optional: use this if you have a node label for Docker agents
         }
     }
-
-    environment {
-        CI = 'true'  // Optional: set the CI environment variable
-    }
-
+    
     stages {
         stage('Build') {
             steps {
