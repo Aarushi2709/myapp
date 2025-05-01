@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         SONAR_HOST_URL = 'http://your-sonarqube-server:9000'
-        SONAR_AUTH_TOKEN = 'your-sonarqube-auth-token'
+        SONAR_AUTH_TOKEN = 'sqa_16d8fbfcf7ee1b744332fd20478faf87894ce490'
     }
     stages {
         stage('Checkout') {
