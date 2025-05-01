@@ -9,6 +9,7 @@ pipeline {
                 sh 'npm install'  // Ensure Node.js is installed on your Jenkins host.
             }
         }
+<<<<<<< HEAD
         stage('Test') {
                     steps {
                         sh './jenkins/scripts/test.sh'
@@ -22,5 +23,9 @@ pipeline {
         //                     }
         //                 }
 
+=======
+     
+    
+>>>>>>> 2479efd5e0aa79cb319b1b974872aa9a2165450e
     }
 }
