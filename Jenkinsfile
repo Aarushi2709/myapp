@@ -1,26 +1,19 @@
 pipeline {
-    agent any  // This will use the default Jenkins agent, no Docker required.
+    agent any  // Use the default Jenkins agent
     environment {
         CI = 'true'
     }
     stages {
         stage('Build') {
             steps {
-                sh 'npm install'  // Ensure Node.js is installed on your Jenkins host.
+                sh 'npm install'
             }
         }
-        // stage('Test') {
-        //             steps {
-        //                 sh './Jenkins/scripts/test.sh'
-        //             }
-        //         }
-        //         stage('Deliver') {
-        //                     steps {
-        //                         sh './jenkins/scripts/deliver.sh'
-        //                         input message: 'Finished using the web site? (Click "Proceed" to continue)'
-        //                         sh './jenkins/scripts/kill.sh'
-        //                     }
-        //                 }
 
+        stage('Run Tests & Coverage') {
+            steps {
+                sh 'npm test -- --coverage'
+            }
+        }
     }
 }
