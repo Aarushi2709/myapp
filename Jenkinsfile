@@ -1,5 +1,5 @@
 pipeline {
-    agent any  // Use the default Jenkins agent
+    agent any
     environment {
         CI = 'true'
     }
